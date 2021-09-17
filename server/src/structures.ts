@@ -35,23 +35,13 @@ export class TreeNode<T extends Comparable>{
 			if(this.right == null){
 				this.right = newNode;
 			}else{
-				if(newValue.lessThan(this.right.value)){
-					newNode.right = this.right;
-					this.right = newNode;
-				}else{
-					this.right.insert(newValue);
-				}
+				this.right.insert(newValue);
 			}
 		}else{
 			if(this.left == null){
 				this.left = newNode;
 			}else{
-				if(newValue.greaterThan(this.left.value)){
-					newNode.left = this.left;
-					this.left = newNode;
-				}else{
-					this.left.insert(newValue);
-				}
+				this.left.insert(newValue);
 			}
 		}
 	}

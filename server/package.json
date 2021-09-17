@@ -16,7 +16,7 @@
 		"vscode-languageserver-textdocument": "^1.0.1"
 	},
 	"scripts": {
-		"test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'tests/**/*.ts'"
+		"test": "mocha -r ts-node/register 'tests/**/*.ts'"
 	},
 	"devDependencies": {
 		"@types/mocha": "^9.0.0",

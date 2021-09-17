@@ -3,6 +3,7 @@
 		"target": "es2019",
 		"lib": ["ES2019"],
 		"module": "commonjs",
+		"esModuleInterop": true,
 		"moduleResolution": "node",
 		"sourceMap": true,
 		"strict": true,
