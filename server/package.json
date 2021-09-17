@@ -1,19 +1,26 @@
 {
-	"name": "lsp-sample-server",
-	"description": "Example implementation of a language server in node.",
+	"name": "crashacters-server",
+	"description": "Crashacters LS",
 	"version": "1.0.0",
-	"author": "Microsoft Corporation",
-	"license": "MIT",
+	"author": "David Reis",
+	"license": "GPLV3",
 	"engines": {
 		"node": "*"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-extension-samples"
+		"url": "https://github.com/davidreis97/Crashacters"
 	},
 	"dependencies": {
 		"vscode-languageserver": "^7.0.0",
 		"vscode-languageserver-textdocument": "^1.0.1"
 	},
-	"scripts": {}
+	"scripts": {
+		"test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'tests/**/*.ts'"
+	},
+	"devDependencies": {
+		"@types/mocha": "^9.0.0",
+		"mocha": "^9.1.1",
+		"ts-node": "^10.2.1"
+	}
 }

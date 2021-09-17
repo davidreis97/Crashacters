@@ -1,13 +1,13 @@
 {
-	"name": "lsp-sample-client",
-	"description": "VSCode part of a language server",
-	"author": "Microsoft Corporation",
-	"license": "MIT",
-	"version": "0.0.1",
+	"name": "crashacters-client",
+	"description": "Crashacters VSCode client",
+	"author": "David Reis",
+	"license": "GPLV3",
+	"version": "1.0.0",
 	"publisher": "vscode",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-extension-samples"
+		"url": "https://github.com/davidreis97/Crashacters"
 	},
 	"engines": {
 		"vscode": "^1.52.0"
