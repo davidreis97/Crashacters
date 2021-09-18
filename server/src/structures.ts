@@ -40,9 +40,9 @@ export class SortedList<T extends Comparable>{
 		while(left <= right){
 			const m = Math.floor((left + right) / 2);
 			const comparison = this.array[m].compare(value);
-			if(comparison > 0){
+			if(comparison < 0){
 				left = m + 1;
-			}else if(comparison < 0){
+			}else if(comparison > 0){
 				right = m - 1;
 			}else{
 				return true;

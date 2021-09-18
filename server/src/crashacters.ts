@@ -9,7 +9,7 @@ for(const range of utf8BadRanges){
 	comparableRangeList.insert(range);
 }
 
-const auxComparableRange = new ComparableRange(0,0);
+const currentCharacter = new ComparableRange(0,0);
 
 export function findCrashacters(document: TextDocument): Diagnostic[] {
 	const startTime = hrtime.bigint();
@@ -18,9 +18,9 @@ export function findCrashacters(document: TextDocument): Diagnostic[] {
 	const diagnostics: Diagnostic[] = [];
 
 	for(let i = 0; i < textBuffer.length; i++){
-		auxComparableRange.start = textBuffer[i];
-		auxComparableRange.end = textBuffer[i];
-		if(comparableRangeList.search(auxComparableRange)){
+		currentCharacter.start = textBuffer[i];
+		currentCharacter.end = textBuffer[i];
+		if(comparableRangeList.search(currentCharacter)){
 			diagnostics.push({
 				message: "Crashacter: U+00"+hex(textBuffer[i]),
 				range: {
