@@ -34,7 +34,7 @@ jobs:
           cache: npm
 
       - name: npm install
-        run: cd $GITHUB_WORKSPACE/server && npm install
+        run: npm install
         
       - name: npm test
-        run: npm test
+        run: cd $GITHUB_WORKSPACE/server && npm test
