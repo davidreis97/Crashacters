@@ -1,12 +1,12 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { Diagnostic } from 'vscode-languageserver/node';
 import { hrtime } from 'process';
-import { ComparableRange, RangeTreeNode } from './structures';
+import { ComparableRange, SortedList } from './structures';
 
 const utf8BadRanges = [new ComparableRange(0x00, 0x19), new ComparableRange(0x7F, 0xA0)];
-const comparableTreeRoot = new RangeTreeNode(utf8BadRanges[0]);
+const comparableRangeList = new SortedList<ComparableRange>();
 for(const range of utf8BadRanges){
-	comparableTreeRoot.insert(range);
+	comparableRangeList.insert(range);
 }
 
 const auxComparableRange = new ComparableRange(0,0);
@@ -20,7 +20,7 @@ export function findCrashacters(document: TextDocument): Diagnostic[] {
 	for(let i = 0; i < textBuffer.length; i++){
 		auxComparableRange.start = textBuffer[i];
 		auxComparableRange.end = textBuffer[i];
-		if(comparableTreeRoot.search(auxComparableRange)){
+		if(comparableRangeList.search(auxComparableRange)){
 			diagnostics.push({
 				message: "Crashacter: U+00"+textBuffer[i].toString(16),
 				range: {
