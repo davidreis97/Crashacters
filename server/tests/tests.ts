@@ -1,6 +1,8 @@
 import assert from 'assert';
 import 'mocha';
 import {Comparable, ComparableRange, SortedList, TreeNode} from '../src/structures';
+import {Result, decodeUtfChar} from '../src/utf8decoding';
+
 
 class ComparableNumber extends Comparable{
 	value: number;
@@ -204,5 +206,48 @@ describe('ComparableRange Search', () => {
 		assert.strictEqual(list.search(new ComparableRange(31,31)), false, "Case1");
 		assert.strictEqual(list.search(new ComparableRange(0,5)), false, "Case2");
 		assert.strictEqual(list.search(new ComparableRange(49,70)), false, "Case3");
+	});
+});
+
+describe('UTF8 Decoding', () => {
+	it('should correctly parse a single byte char', () => {
+		const result = new Result();
+		decodeUtfChar(Buffer.from("\u0000", "utf8"), result);
+
+		assert.strictEqual(result.error, false);
+		assert.strictEqual(result.char, 0);
+		assert.strictEqual(result.newIndex, 1);
+
+		decodeUtfChar(Buffer.from("\u0041", "utf8"), result);
+
+		assert.strictEqual(result.error, false);
+		assert.strictEqual(result.char, 0x41);
+		assert.strictEqual(result.newIndex, 1);
+	});
+
+	it('should correctly parse a multi byte char', () => {
+		const result = new Result();
+		decodeUtfChar(Buffer.from("\u00A2", "utf8"), result);
+
+		assert.strictEqual(result.error, false);
+		assert.strictEqual(result.char, 0xA2);
+		assert.strictEqual(result.newIndex, 2);
+
+		decodeUtfChar(Buffer.from("\uD55C", "utf8"), result);
+
+		assert.strictEqual(result.error, false);
+		assert.strictEqual(result.char, 0xD55C);
+		assert.strictEqual(result.newIndex, 3);
+	});
+
+	it('should correctly mark a result as an error when given a bad buffer', () => {
+		const result = new Result();
+		decodeUtfChar(Buffer.from([0b10100100]), result);
+
+		assert.strictEqual(result.error, true);
+	});
+
+	it('should not attempt to read past the end of the buffer', () => {
+		//TODO - Not implemented
 	});
 });
