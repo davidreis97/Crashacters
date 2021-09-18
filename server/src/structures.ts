@@ -5,8 +5,7 @@ export abstract class Comparable{
 	equalTo = (c1:Comparable) : boolean => this.compare(c1) === 0;
 }
 
-//Assumes that ranges don't intersect
-export class FastComparableRange extends Comparable{
+export class ComparableRange extends Comparable{
 	start: number
 	end: number
 
@@ -16,21 +15,45 @@ export class FastComparableRange extends Comparable{
 		this.end = end;
 	}
 
-	compare = (r2: FastComparableRange): number => this.start - r2.end;
+	compare(r2:ComparableRange): number {
+		const startDiff = this.start - r2.start;
+		if(startDiff > 0) return startDiff;
+
+		const endDiff = this.end - r2.end;
+		if(endDiff < 0) return endDiff;
+		
+		return 0;
+	}
 }
 
 //Unbalanced
-export class TreeNode<T extends Comparable>{
-	left?: TreeNode<T>
-	right?: TreeNode<T>
-	value: T
+export class RangeTreeNode<T extends Comparable>{
+	left?: RangeTreeNode<T>
+	right?: RangeTreeNode<T>
+	value!: T
 
 	constructor(value: T){
 		this.value = value;
 	}
 
+	search(value: T): boolean{
+		if(this.value.equalTo(value)) return true;
+
+		if(value.greaterThan(this.value)){
+			if (this.right != null){
+				return this.right.search(value);
+			}
+		}else{
+			if (this.left != null){
+				return this.left.search(value);
+			}
+		}
+
+		return false;
+	}
+
 	insert(newValue: T){
-		const newNode = new TreeNode(newValue);
+		const newNode = new RangeTreeNode(newValue);
 		if(newValue.greaterThan(this.value)){
 			if(this.right == null){
 				this.right = newNode;
