@@ -1,5 +1,7 @@
 # Crashacters
 
+![Build & Test](https://github.com/davidreis97/Crashacters/actions/workflows/main.yml/badge.svg)
+
 Heavily documented sample code for https://code.visualstudio.com/api/language-extensions/language-server-extension-guide
 
 ## Functionality
