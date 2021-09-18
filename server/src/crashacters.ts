@@ -3,7 +3,7 @@ import { Diagnostic } from 'vscode-languageserver/node';
 import { hrtime } from 'process';
 import { ComparableRange, SortedList } from './structures';
 
-const utf8BadRanges = [new ComparableRange(0x00, 0x19), new ComparableRange(0x7F, 0xA0)];
+const utf8BadRanges = [new ComparableRange(0x00, 0x0C), new ComparableRange(0x0E, 0x19), new ComparableRange(0x7F, 0xA0)];
 const comparableRangeList = new SortedList<ComparableRange>();
 for(const range of utf8BadRanges){
 	comparableRangeList.insert(range);
@@ -22,7 +22,7 @@ export function findCrashacters(document: TextDocument): Diagnostic[] {
 		auxComparableRange.end = textBuffer[i];
 		if(comparableRangeList.search(auxComparableRange)){
 			diagnostics.push({
-				message: "Crashacter: U+00"+textBuffer[i].toString(16),
+				message: "Crashacter: U+00"+hex(textBuffer[i]),
 				range: {
 					start: document.positionAt(i),
 					end: document.positionAt(i+1)
@@ -37,3 +37,5 @@ export function findCrashacters(document: TextDocument): Diagnostic[] {
 
 	return diagnostics;
 }
+
+const hex = (d: number) => Number(d).toString(16).padStart(2, '0');
