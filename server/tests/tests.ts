@@ -207,4 +207,4 @@ describe('ComparableRange Search', () => {
 	});
 });
 
-describe('CI TEST', () => it('should fail', () => assert.strictEqual(true, false)));
+describe('CI TEST', () => it('should  fail', () => assert.strictEqual(true, false)));
