@@ -206,5 +206,3 @@ describe('ComparableRange Search', () => {
 		assert.strictEqual(list.search(new ComparableRange(49,70)), false, "Case3");
 	});
 });
-
-describe('CI TEST', () => it('should  fail', () => assert.strictEqual(true, false)));
