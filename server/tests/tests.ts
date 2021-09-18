@@ -210,44 +210,44 @@ describe('ComparableRange Search', () => {
 });
 
 describe('UTF8 Decoding', () => {
-	it('should correctly parse a single byte char', () => {
+	it('should parse a single byte char', () => {
 		const result = new Result();
 		decodeUtfChar(Buffer.from("\u0000", "utf8"), result);
 
-		assert.strictEqual(result.error, false);
-		assert.strictEqual(result.char, 0);
-		assert.strictEqual(result.newIndex, 1);
+		assert.strictEqual(result.error, false, "Case1");
+		assert.strictEqual(result.char, 0, "Case1");
+		assert.strictEqual(result.newIndex, 1, "Case1");
 
 		decodeUtfChar(Buffer.from("\u0041", "utf8"), result);
 
-		assert.strictEqual(result.error, false);
-		assert.strictEqual(result.char, 0x41);
-		assert.strictEqual(result.newIndex, 1);
+		assert.strictEqual(result.error, false, "Case2");
+		assert.strictEqual(result.char, 0x41, "Case2");
+		assert.strictEqual(result.newIndex, 1, "Case2");
 	});
 
-	it('should correctly parse a multi byte char', () => {
+	it('should parse a multi byte char', () => {
 		const result = new Result();
 		decodeUtfChar(Buffer.from("\u00A2", "utf8"), result);
 
-		assert.strictEqual(result.error, false);
-		assert.strictEqual(result.char, 0xA2);
-		assert.strictEqual(result.newIndex, 2);
+		assert.strictEqual(result.error, false, "Case1");
+		assert.strictEqual(result.char, 0xA2, "Case1");
+		assert.strictEqual(result.newIndex, 2, "Case1");
 
 		decodeUtfChar(Buffer.from("\uD55C", "utf8"), result);
 
-		assert.strictEqual(result.error, false);
-		assert.strictEqual(result.char, 0xD55C);
-		assert.strictEqual(result.newIndex, 3);
+		assert.strictEqual(result.error, false, "Case2");
+		assert.strictEqual(result.char, 0xD55C, "Case2");
+		assert.strictEqual(result.newIndex, 3, "Case2");
 	});
 
-	it('should correctly mark a result as an error when given a bad buffer', () => {
+	it('should mark a result as an error when given a bad buffer', () => {
 		const result = new Result();
 		decodeUtfChar(Buffer.from([0b10100100]), result);
 
-		assert.strictEqual(result.error, true);
+		assert.strictEqual(result.error, true, "Case1");
 	});
 
-	it('should not attempt to read past the end of the buffer', () => {
+	it('should not read past the end of the buffer', () => {
 		//TODO - Not implemented
 	});
 });
