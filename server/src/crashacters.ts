@@ -39,3 +39,14 @@ export function findCrashacters(document: TextDocument): Diagnostic[] {
 }
 
 const hex = (d: number) => Number(d).toString(16).padStart(2, '0');
+
+export function loadRanges(rangesString: string): ComparableRange[]{
+	const ranges = JSON.parse(rangesString);
+	for(let i = 0; i < ranges.length; i++){
+		if(ranges[i].start == null || !Number.isFinite(ranges[i].start) || ranges[i].end == null || !Number.isFinite(ranges[i].end)){
+			throw "Bad ranges string";
+		}
+		ranges[i] = new ComparableRange(ranges[i].start, ranges[i].end);
+	}
+	return ranges;
+}
