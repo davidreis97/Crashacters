@@ -1,7 +1,7 @@
 {
 	"name": "crashacters",
 	"displayName": "Crashacters",
-	"description": "Highlights nasty UTF characters as errors in your codebase",
+	"description": "Highlights nasty UTF characters as errors in all your files",
 	"author": "David Reis",
 	"license": "GPLV3",
 	"version": "1.0.0",
@@ -32,18 +32,36 @@
 					"scope": "resource",
 					"type": "number",
 					"default": 100,
-					"description": "Controls the maximum number of problems produced by the server."
+					"description": "Controls the maximum number of errors produced."
 				},
-				"crashacters.trace.server": {
-					"scope": "window",
-					"type": "string",
-					"enum": [
-						"off",
-						"messages",
-						"verbose"
-					],
-					"default": "off",
-					"description": "Traces the communication between VS Code and the language server."
+				"crashacters.characterBlacklist": {
+					"scope": "resource",
+					"type": "object",
+					"default": {
+						"ranges": [
+							{
+								"start": 0,
+								"end": 9
+							},
+							{
+								"start": 11,
+								"end": 12
+							},
+							{
+								"start": 14,
+								"end": 31
+							},
+							{
+								"start": 127,
+								"end": 255
+							},
+							{
+								"start": 592,
+								"end": 65533
+							}
+						]
+					},
+					"description": "Defines the ranges of characters that are marked as errors, using decimal UTF8 codepoints. See https://www.ssec.wisc.edu/~tomw/java/unicode.html for a full unicode chart."
 				}
 			}
 		}

@@ -1,14 +1,9 @@
 import {
 	createConnection,
 	TextDocuments,
-	Diagnostic,
-	DiagnosticSeverity,
 	ProposedFeatures,
 	InitializeParams,
 	DidChangeConfigurationNotification,
-	CompletionItem,
-	CompletionItemKind,
-	TextDocumentPositionParams,
 	TextDocumentSyncKind,
 	InitializeResult
 } from 'vscode-languageserver/node';
@@ -16,7 +11,7 @@ import {
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
-import { findCrashacters } from './crashacters';
+import { Crashacters } from './crashacters';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -49,10 +44,6 @@ connection.onInitialize((params: InitializeParams) => {
 	const result: InitializeResult = {
 		capabilities: {
 			textDocumentSync: TextDocumentSyncKind.Incremental,
-			// Tell the client that this server supports code completion.
-			completionProvider: {
-				resolveProvider: true
-			}
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -70,33 +61,59 @@ connection.onInitialized(() => {
 		// Register for all configuration changes.
 		connection.client.register(DidChangeConfigurationNotification.type, undefined);
 	}
-	if (hasWorkspaceFolderCapability) {
-		connection.workspace.onDidChangeWorkspaceFolders(_event => {
-			connection.console.log('Workspace folder change event received.');
-		});
-	}
 });
 
-// The example settings
-interface ExampleSettings {
+interface RangeSetting {
+	start: number,
+	end: number
+}
+
+export interface CrashactersSettings {
 	maxNumberOfProblems: number;
+	characterBlacklist: {
+		ranges: RangeSetting[]
+	}
 }
 
 // The global settings, used when the `workspace/configuration` request is not supported by the client.
 // Please note that this is not the case when using this server with the client provided in this example
 // but could happen with other clients.
-const defaultSettings: ExampleSettings = { maxNumberOfProblems: 1000 };
-let globalSettings: ExampleSettings = defaultSettings;
+const defaultSettings: CrashactersSettings = {
+	maxNumberOfProblems: 1000,
+	characterBlacklist: {
+		ranges: [{
+			"start": 0,
+			"end": 9
+		},
+		{
+			"start": 11,
+			"end": 12
+		},
+		{
+			"start": 14,
+			"end": 31
+		},
+		{
+			"start": 127,
+			"end": 255
+		},
+		{
+			"start": 592,
+			"end": 65533
+		}]
+	}
+};
+let globalSettings: CrashactersSettings = defaultSettings;
 
 // Cache the settings of all open documents
-const documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
+const documentSettingsCache: Map<string, Thenable<CrashactersSettings>> = new Map();
 
 connection.onDidChangeConfiguration(change => {
 	if (hasConfigurationCapability) {
 		// Reset all cached document settings
-		documentSettings.clear();
+		documentSettingsCache.clear();
 	} else {
-		globalSettings = <ExampleSettings>(
+		globalSettings = <CrashactersSettings>(
 			(change.settings.languageServerExample || defaultSettings)
 		);
 	}
@@ -105,24 +122,24 @@ connection.onDidChangeConfiguration(change => {
 	documents.all().forEach(validateTextDocument);
 });
 
-function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
+function getDocumentSettings(resource: string): Thenable<CrashactersSettings> {
 	if (!hasConfigurationCapability) {
 		return Promise.resolve(globalSettings);
 	}
-	let result = documentSettings.get(resource);
+	let result = documentSettingsCache.get(resource);
 	if (!result) {
 		result = connection.workspace.getConfiguration({
 			scopeUri: resource,
 			section: 'crashacters'
 		});
-		documentSettings.set(resource, result);
+		documentSettingsCache.set(resource, result);
 	}
 	return result;
 }
 
 // Only keep settings for open documents
 documents.onDidClose(e => {
-	documentSettings.delete(e.document.uri);
+	documentSettingsCache.delete(e.document.uri);
 });
 
 // The content of a text document has changed. This event is emitted
@@ -131,50 +148,16 @@ documents.onDidChangeContent(change => {
 	validateTextDocument(change.document);
 });
 
+const crashacters = new Crashacters();
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
-	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics: findCrashacters(textDocument)});
+	getDocumentSettings(textDocument.uri).then(
+		settings => connection.sendDiagnostics({
+			uri: textDocument.uri,
+			diagnostics: crashacters.findCrashacters(textDocument, settings)
+		}),
+		error => console.log(error)
+	);
 }
-
-connection.onDidChangeWatchedFiles(_change => {
-	// Monitored files have change in VSCode
-	connection.console.log('We received an file change event');
-});
-
-// This handler provides the initial list of the completion items.
-connection.onCompletion(
-	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-		// The pass parameter contains the position of the text document in
-		// which code complete got requested. For the example we ignore this
-		// info and always provide the same completion items.
-		return [
-			{
-				label: 'TypeScript',
-				kind: CompletionItemKind.Text,
-				data: 1
-			},
-			{
-				label: 'JavaScript',
-				kind: CompletionItemKind.Text,
-				data: 2
-			}
-		];
-	}
-);
-
-// This handler resolves additional information for the item selected in
-// the completion list.
-connection.onCompletionResolve(
-	(item: CompletionItem): CompletionItem => {
-		if (item.data === 1) {
-			item.detail = 'TypeScript details';
-			item.documentation = 'TypeScript documentation';
-		} else if (item.data === 2) {
-			item.detail = 'JavaScript details';
-			item.documentation = 'JavaScript documentation';
-		}
-		return item;
-	}
-);
 
 // Make the text document manager listen on the connection
 // for open, change and close text document events

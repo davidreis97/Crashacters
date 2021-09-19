@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { workspace, ExtensionContext } from 'vscode';
+import { ExtensionContext } from 'vscode';
 
 import {
 	LanguageClient,
@@ -9,17 +9,16 @@ import {
 } from 'vscode-languageclient/node';
 
 let client: LanguageClient;
+const isDebugMode = () => process.env.CRASHACTERS_DEBUG_MODE === "true";
 
 export function activate(context: ExtensionContext) {
-	console.log("Activating...");
-
 	// The server is implemented in node
 	const serverModule = context.asAbsolutePath(
 		path.join('server', 'out', 'server.js')
 	);
 	// The debug options for the server
 	// --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
-	const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
+	const debugOptions = isDebugMode() ? { execArgv: ['--nolazy', '--inspect=6009'] } : undefined;
 
 	// If the extension is launched in debug mode then the debug server options are used
 	// Otherwise the run options are used
@@ -36,11 +35,7 @@ export function activate(context: ExtensionContext) {
 	const clientOptions: LanguageClientOptions = {
 		// Register the server for plain text documents
 		documentSelector: [{ scheme: 'file' }],
-		synchronize: {
-			// Notify the server about file changes to '.clientrc files contained in the workspace
-			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
-		},
-		outputChannelName: "Crashacters"
+		outputChannelName: isDebugMode() ? "Crashacters" : undefined
 	};
 
 	// Create the language client and start the client.
