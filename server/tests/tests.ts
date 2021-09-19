@@ -1,7 +1,8 @@
 import assert from 'assert';
 import 'mocha';
 import {Comparable, ComparableRange, SortedList, TreeNode} from '../src/structures';
-import {loadRanges} from '../src/crashacters';
+import {Crashacters} from '../src/crashacters';
+import { CrashactersSettings } from '../src/server';
 
 class ComparableNumber extends Comparable{
     value: number;
@@ -209,9 +210,12 @@ describe('ComparableRange Search', () => {
 });
 
 describe('ComparableRange[] Parsing', () => {
-    it('should correctly parse a valid json string', () => {
-        const rangesString = '[{"start": 0, "end": 1}, {"start":2, "end":127}]';
-        const ranges = loadRanges(rangesString);
+    const crashacter = new Crashacters();
+
+    it('should correctly parse a valid object', () => {
+        const settings: CrashactersSettings = {maxNumberOfProblems: -1, characterBlacklist: {ranges: [{"start": 0, "end": 1}, {"start":2, "end":127}]}};
+        crashacter.loadRanges(settings);
+        const ranges = crashacter.blacklistedCharacterRanges.array;
 
         assert.strictEqual(ranges != null, true);
         assert.strictEqual(ranges.length, 2);
@@ -221,13 +225,5 @@ describe('ComparableRange[] Parsing', () => {
         assert.strictEqual(ranges[0].end, 1);
         assert.strictEqual(ranges[1].start, 2);
         assert.strictEqual(ranges[1].end, 127);
-    });
-
-    it('should throw when parsing an invalid json string', () => {
-        let rangesString = '[{"end": 1}, {"start":2, "end":127}]';
-        assert.throws(() => loadRanges(rangesString));
-
-        rangesString = '[{"start": "0", "end": 1}, {"start":2, "end":127}]';
-        assert.throws(() => loadRanges(rangesString));
     });
 });
