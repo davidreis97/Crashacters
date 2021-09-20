@@ -5,17 +5,19 @@
 	"icon": "assets/logo/crashacters.png",
 	"author": "David Reis",
 	"license": "GPLV3",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/davidreis97/Crashacters.git"
 	},
 	"publisher": "david-reis",
-	"categories": [],
+	"categories": ["Linters", "Other"],
 	"keywords": [
+		"lint",
+		"syntax",
 		"syntax highlight",
-		"characters",
-		"code analysis"
+		"code analysis",
+		"unicode"
 	],
 	"engines": {
 		"vscode": "^1.43.0"
