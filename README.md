@@ -2,7 +2,6 @@
 ![Build & Test](https://github.com/davidreis97/Crashacters/actions/workflows/main.yml/badge.svg)
 
 ### Highlights invisible and misleading Unicode characters as errors
-<br/>
 
 ![Example](assets/screenshots/misleadinghyphen1.png)
 
