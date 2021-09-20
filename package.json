@@ -1,13 +1,14 @@
 {
 	"name": "crashacters",
 	"displayName": "Crashacters",
-	"description": "Highlights nasty UTF characters as errors in all your files",
+	"description": "Highlights invisible and misleading Unicode characters as errors",
+	"icon": "assets/logo/crashacters.png",
 	"author": "David Reis",
 	"license": "GPLV3",
 	"version": "1.0.0",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/davidreis97/Crashacters"
+		"url": "https://github.com/davidreis97/Crashacters.git"
 	},
 	"publisher": "david-reis",
 	"categories": [],
