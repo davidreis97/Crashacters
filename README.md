@@ -8,7 +8,7 @@
 
 ## Features
 
-Crashacters allows you to quickly spot characters that don't belong in your files. Saves you some time debugging when your application crashes because the file you're using as input has an unexpected character that is either invisible in your editor or looks just like the correct character.
+Crashacters allows you to quickly spot characters that don't belong in your files. Saves you from wasting time debugging when your application crashes because the file you're using as input has an unexpected character that is either invisible in your editor or looks just like a valid character.
 
 You can customize the ranges of Unicode characters that you want the extension to highlight as errors using the extension settings in VSCode. 
 
