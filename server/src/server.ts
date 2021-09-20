@@ -84,7 +84,7 @@ const defaultSettings: CrashactersSettings = {
 		ranges: [
 			{
 				start: 0,
-				end: 9
+				end: 8
 			},
 			{
 				start: 11,
