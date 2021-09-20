@@ -29,7 +29,7 @@ export class Crashacters{
 				if(diagnosticsGenerated >= settings.maxNumberOfProblems) break;
 				diagnosticsGenerated++;
 				diagnostics.push({
-					message: "Crashacter: U+00"+hex(codePoint),
+					message: "Crashacter: U+"+hex(codePoint),
 					range: {
 						start: document.positionAt(i),
 						end: document.positionAt(i+1)
@@ -57,4 +57,4 @@ export class Crashacters{
 	}
 }
 
-const hex = (d: number) => Number(d).toString(16).padStart(2, '0');
+const hex = (d: number) => Number(d).toString(16).padStart(4, '0');
