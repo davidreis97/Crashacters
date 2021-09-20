@@ -14,23 +14,22 @@ export class Crashacters{
 
 	findCrashacters(document: TextDocument, settings: CrashactersSettings): Diagnostic[] {
 		const startTime = hrtime.bigint();
-	
-		this.loadRanges(settings);
+		const text = document.getText();
+		const diagnostics = [];
 
-		console.log(this.blacklistedCharacterRanges.array);
-	
-		const textBuffer = Buffer.from(document.getText(), 'utf-8');
-		const diagnostics: Diagnostic[] = [];
+		this.loadRanges(settings);
 		let diagnosticsGenerated = 0;
 	
-		for(let i = 0; i < textBuffer.length; i++){
-			this.currentCharacter.start = textBuffer[i];
-			this.currentCharacter.end = textBuffer[i];
+		for(let i = 0; i < text.length; i++){
+			const codePoint = text[i].codePointAt(0);
+			if(codePoint == null) continue;
+			this.currentCharacter.start = codePoint;
+			this.currentCharacter.end = codePoint;
 			if(this.blacklistedCharacterRanges.search(this.currentCharacter)){
 				if(diagnosticsGenerated >= settings.maxNumberOfProblems) break;
 				diagnosticsGenerated++;
 				diagnostics.push({
-					message: "Crashacter: U+00"+hex(textBuffer[i]),
+					message: "Crashacter: U+00"+hex(codePoint),
 					range: {
 						start: document.positionAt(i),
 						end: document.positionAt(i+1)
