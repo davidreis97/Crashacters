@@ -81,26 +81,32 @@ export interface CrashactersSettings {
 const defaultSettings: CrashactersSettings = {
 	maxNumberOfProblems: 1000,
 	characterBlacklist: {
-		ranges: [{
-			"start": 0,
-			"end": 9
-		},
-		{
-			"start": 11,
-			"end": 12
-		},
-		{
-			"start": 14,
-			"end": 31
-		},
-		{
-			"start": 127,
-			"end": 255
-		},
-		{
-			"start": 592,
-			"end": 65533
-		}]
+		ranges: [
+			{
+				start: 0,
+				end: 9
+			},
+			{
+				start: 11,
+				end: 12
+			},
+			{
+				start: 14,
+				end: 31
+			},
+			{
+				start: 127,
+				end: 160
+			},
+			{
+				start: 592,
+				end: 8351
+			},
+			{
+				start: 8368,
+				end: 65535
+			}
+		]
 	}
 };
 let globalSettings: CrashactersSettings = defaultSettings;
