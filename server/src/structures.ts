@@ -61,6 +61,10 @@ export class SortedList<T extends Comparable>{
 		}
 		this.array.push(value);
 	}
+
+	clear(){
+		this.array = [];
+	}
 }
 
 //Unbalanced

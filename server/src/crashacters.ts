@@ -2,42 +2,59 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { Diagnostic } from 'vscode-languageserver/node';
 import { hrtime } from 'process';
 import { ComparableRange, SortedList } from './structures';
+import { CrashactersSettings } from './server';
 
-const utf8BadRanges = [new ComparableRange(0x00, 0x08),new ComparableRange(0x0B, 0x0C), new ComparableRange(0x0E, 0x1F), new ComparableRange(0x7F, 0xFFFFFF)];
-const comparableRangeList = new SortedList<ComparableRange>();
-for(const range of utf8BadRanges){
-	comparableRangeList.insert(range);
-}
+export class Crashacters{
+	blacklistedCharacterRanges: SortedList<ComparableRange>;
+	currentCharacter = new ComparableRange(0,0);
 
-const currentCharacter = new ComparableRange(0,0);
-
-export function findCrashacters(document: TextDocument): Diagnostic[] {
-	const startTime = hrtime.bigint();
-
-	const text = document.getText();
-	const diagnostics: Diagnostic[] = [];
-
-	for(let i = 0; i < text.length; i++){
-		const codePoint = text[i].codePointAt(0);
-		if(codePoint == null) continue;
-		currentCharacter.start = codePoint;
-		currentCharacter.end = codePoint;
-		if(comparableRangeList.search(currentCharacter)){
-			diagnostics.push({
-				message: "Crashacter: U+"+hex(codePoint),
-				range: {
-					start: document.positionAt(i),
-					end: document.positionAt(i+1)
-				}
-			});
-		}
+	constructor(){
+		this.blacklistedCharacterRanges = new SortedList<ComparableRange>();
 	}
 
-	const endTime = hrtime.bigint();
+	findCrashacters(document: TextDocument, settings: CrashactersSettings): Diagnostic[] {
+		const startTime = hrtime.bigint();
+		const text = document.getText();
+		const diagnostics = [];
 
-	console.log(endTime - startTime);
+		this.loadRanges(settings);
+		let diagnosticsGenerated = 0;
+	
+		for(let i = 0; i < text.length; i++){
+			const codePoint = text[i].codePointAt(0);
+			if(codePoint == null) continue;
+			this.currentCharacter.start = codePoint;
+			this.currentCharacter.end = codePoint;
+			if(this.blacklistedCharacterRanges.search(this.currentCharacter)){
+				if(diagnosticsGenerated >= settings.maxNumberOfProblems) break;
+				diagnosticsGenerated++;
+				diagnostics.push({
+					message: "Crashacter: U+00"+hex(codePoint),
+					range: {
+						start: document.positionAt(i),
+						end: document.positionAt(i+1)
+					}
+				});
+			}
+		}
+	
+		const endTime = hrtime.bigint();
+	
+		console.log(endTime - startTime);
+	
+		return diagnostics;
+	}
 
-	return diagnostics;
+	loadRanges(settings: CrashactersSettings){
+		this.blacklistedCharacterRanges.clear();
+		for(const range of settings.characterBlacklist.ranges){
+			if(range.start == null || !Number.isFinite(range.start) || range.end == null || !Number.isFinite(range.end)){
+				console.log(`Bad range, skipping [${JSON.stringify(range)}]`);
+				continue;
+			}
+			this.blacklistedCharacterRanges.insert(new ComparableRange(range.start, range.end));
+		}
+	}
 }
 
 const hex = (d: number) => Number(d).toString(16).padStart(2, '0');
