@@ -12,6 +12,7 @@ import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
 import { Crashacters } from './crashacters';
+import { reportCrash } from './analytics';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -156,13 +157,17 @@ documents.onDidChangeContent(change => {
 
 const crashacters = new Crashacters();
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
-	getDocumentSettings(textDocument.uri).then(
-		settings => connection.sendDiagnostics({
-			uri: textDocument.uri,
-			diagnostics: crashacters.findCrashacters(textDocument, settings)
-		}),
-		error => console.log(error)
-	);
+	try{
+		getDocumentSettings(textDocument.uri).then(
+			settings => connection.sendDiagnostics({
+				uri: textDocument.uri,
+				diagnostics: crashacters.findCrashacters(textDocument, settings)
+			}),
+			error => reportCrash(error)
+		);
+	}catch(e){
+		reportCrash(e as Error);
+	}
 }
 
 // Make the text document manager listen on the connection

@@ -3,6 +3,7 @@ import { Diagnostic } from 'vscode-languageserver/node';
 import { hrtime } from 'process';
 import { ComparableRange, SortedList } from './structures';
 import { CrashactersSettings } from './server';
+import { Metric, pushMetric } from './analytics';
 
 export class Crashacters{
 	blacklistedCharacterRanges: SortedList<ComparableRange>;
@@ -40,7 +41,7 @@ export class Crashacters{
 	
 		const endTime = hrtime.bigint();
 	
-		console.log(endTime - startTime);
+		pushMetric(Metric.PROCESSING_TIME, Number(startTime - endTime));
 	
 		return diagnostics;
 	}
@@ -49,7 +50,6 @@ export class Crashacters{
 		this.blacklistedCharacterRanges.clear();
 		for(const range of settings.characterBlacklist.ranges){
 			if(range.start == null || !Number.isFinite(range.start) || range.end == null || !Number.isFinite(range.end)){
-				console.log(`Bad range, skipping [${JSON.stringify(range)}]`);
 				continue;
 			}
 			this.blacklistedCharacterRanges.insert(new ComparableRange(range.start, range.end));
