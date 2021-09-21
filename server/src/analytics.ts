@@ -1,4 +1,4 @@
-import appInsights from 'applicationinsights';
+import * as appInsights from 'applicationinsights';
 
 const maxPushPerSecond = 1;
 let pushedLastSecond = 0;
