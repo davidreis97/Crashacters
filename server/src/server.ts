@@ -12,6 +12,7 @@ import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
 import { Crashacters } from './crashacters';
+import { Insights } from './insights';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -23,6 +24,10 @@ const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
+
+connection.onShutdown(() => {
+	insights?.dispose()
+});
 
 connection.onInitialize((params: InitializeParams) => {
 	const capabilities = params.capabilities;
@@ -61,6 +66,8 @@ connection.onInitialized(() => {
 		// Register for all configuration changes.
 		connection.client.register(DidChangeConfigurationNotification.type, undefined);
 	}
+
+	insights = Insights.getInstance();
 });
 
 interface RangeSetting {
@@ -155,14 +162,19 @@ documents.onDidChangeContent(change => {
 });
 
 const crashacters = new Crashacters();
+let insights: Insights;
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
-	getDocumentSettings(textDocument.uri).then(
-		settings => connection.sendDiagnostics({
-			uri: textDocument.uri,
-			diagnostics: crashacters.findCrashacters(textDocument, settings)
-		}),
-		error => console.log(error)
-	);
+	try{
+		getDocumentSettings(textDocument.uri).then(
+			settings => connection.sendDiagnostics({
+				uri: textDocument.uri,
+				diagnostics: crashacters.findCrashacters(textDocument, settings)
+			}),
+			error => insights?.reportCrash(error)
+		);
+	}catch(e){
+		insights?.reportCrash(e as Error);
+	}
 }
 
 // Make the text document manager listen on the connection
