@@ -5,7 +5,7 @@
 	"icon": "assets/logo/crashacters.png",
 	"author": "David Reis",
 	"license": "GPLV3",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/davidreis97/Crashacters.git"
