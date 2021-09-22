@@ -22,9 +22,6 @@ export class Insights{
 	pushMetric(metric: Metric, value: number){
 		if (this.pushedLastSecond > this.maxPushPerSecond) return;
 
-		console.log(metric, value);
-
-
 		this.client.trackMetric({name: metric, value});
 		this.pushedLastSecond++;
 	}
