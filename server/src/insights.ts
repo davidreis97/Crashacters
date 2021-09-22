@@ -16,7 +16,6 @@ export class Insights{
 		}, 1000);
 
 		appInsights.setup("fadd4644-263c-4932-a04c-28c146ee7a3a")
-				   .setSendLiveMetrics(true)
 				   .start();
 		this.client = appInsights.defaultClient;
 	}
