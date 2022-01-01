@@ -26,7 +26,3 @@ Just like most LSP-based extensions,
 - If you want to debug the server as well use the launch configuration `Attach to Server`
 - In the [Extension Development Host] instance of VSCode, open any document.
 - Enter blacklisted characters and the extension will highlight them.
-
-## Insights
-
-For development purposes, the extension occasionally collects insights of how long it took to process an entire file using Application Insights from Microsoft Azure.
